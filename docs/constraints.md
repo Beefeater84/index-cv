@@ -1,52 +1,52 @@
-# Ограничения
+# Constraints
 
-Жёсткие правила для каждой публикуемой страницы. Проверяются при сборке. Если правило нарушено, сборка падает, кроме пунктов, помеченных «предупреждение».
+Hard rules for every published page. They are checked at build time. If a rule is violated, the build fails — except for items marked "warning".
 
-Почему так: агент загружает страницу, конвертирует HTML в текст и обрезает его по лимиту (см. [spec.md](spec.md), раздел 1). Всё, что не является читаемым текстом, расходует лимит впустую или мешает конвертации.
+Why: an agent loads a page, converts the HTML to text and truncates it at a limit (see [spec.md](spec.md), section 1). Anything that is not readable text either wastes that limit or gets in the way of the conversion.
 
-## 1. Минимальный HTML
+## 1. Minimal HTML
 
-- **Без JavaScript.** Единственный `<script>` — JSON-LD на главной.
-- **CSS — один внешний файл** (`/style.css`, ≤ 5 KB). Никаких `<style>` в страницах и `style="..."` в атрибутах. Агенты CSS не загружают, поэтому вынос его из HTML ничего не стоит.
-- **Только семантические теги:** `h1–h3`, `p`, `ul/ol/li`, `a`, `strong/em`, `time`, `header/main/footer`, `section`. Никаких `div`-обёрток ради вёрстки и лишних классов.
-- **Никаких** иконочных шрифтов, inline SVG, изображений в контенте, трекеров, cookie-баннеров, виджетов.
-- Навигация минимальная: на главной её нет, на проекте — одна ссылка «Full CV index» в начале и в конце.
+- **No JavaScript.** The only `<script>` is the JSON-LD on the home page.
+- **CSS is a single external file** (`/style.css`, ≤ 5 KB). No `<style>` in pages and no `style="..."` attributes. Agents do not load CSS, so moving it out of the HTML costs them nothing.
+- **Semantic tags only:** `h1–h3`, `p`, `ul/ol/li`, `a`, `strong/em`, `time`, `header/main/footer`, `section`. No layout `div` wrappers and no extra classes.
+- **No** icon fonts, inline SVG, images in content, trackers, cookie banners or widgets.
+- Minimal navigation: none on the home page; on a project page, a single "Full CV index" link at the top and at the bottom.
 
-### Лимиты на сырой HTML
+### Raw HTML limits
 
-| Страница | Размер HTML | Доля текста* |
+| Page | HTML size | Text share* |
 |---|---|---|
-| Главная | ≤ 40 KB | ≥ 50 % |
-| Проект | ≤ 30 KB | ≥ 60 % |
+| Home | ≤ 40 KB | ≥ 50 % |
+| Project | ≤ 30 KB | ≥ 60 % |
 
-\* Байты читаемого текста / байты HTML. На главной ниже из-за JSON-LD. Проверяется только для HTML ≥ 10 KB: на маленьких страницах `<head>` доминирует и доля ничего не говорит.
+\* Bytes of readable text / bytes of HTML. Lower on the home page because of the JSON-LD. Only checked for HTML ≥ 10 KB: on small pages the `<head>` dominates and the ratio says nothing.
 
-## 2. Читаемый текст
+## 2. Readable text
 
-- **Всё содержимое — текстом в HTML.** Ничего в картинках, `title`-подсказках, скрытых блоках (`display:none`, `hidden`), аккордеонах или табах.
-- **Полные фразы с конкретикой:** кто, что сделал, каким способом, с каким результатом в цифрах. Строка должна быть понятна в отрыве от остальной страницы.
-- **Самодостаточность:** каждая страница повторяет свой контекст (компания, период, роль). Никаких «см. выше» и «как упоминалось».
-- **Однозначные даты:** `2022-03 — 2024-01`, `present`. Не «2 года назад».
-- **Аббревиатуры** расшифровываются при первом упоминании на странице, кроме общепринятых (SQL, API, AWS).
-- **Текст ссылки описывает цель:** `Billing platform @ Acme`, а не «here» или «подробнее».
-- **Списки вместо таблиц** для контента: таблицы плохо переживают конвертацию в текст. Исключение — короткие таблицы фактов (2–3 колонки).
-- **Эмодзи и декоративные символы не несут смысла.** Если без символа теряется информация, напиши её словами.
-- **Важное в начале:** первые ~1k токенов каждой страницы содержат главные факты (для главной — кто, роль, summary; для проекта — компания, период, роль, главный результат).
+- **All content is text in the HTML.** Nothing in images, `title` tooltips, hidden blocks (`display:none`, `hidden`), accordions or tabs.
+- **Complete sentences with specifics:** who did what, how, with what measurable result. Each line must make sense out of context.
+- **Self-contained pages:** every page repeats its own context (company, period, role). No "see above" or "as mentioned".
+- **Unambiguous dates:** `2022-03 — 2024-01`, `present`. Not "2 years ago".
+- **Abbreviations** are expanded on first use on each page, except widely known ones (SQL, API, AWS).
+- **Link text describes the target:** `Billing platform @ Acme`, not "here" or "more".
+- **Lists instead of tables** for content: tables survive conversion to text poorly. Exception — short fact tables (2–3 columns).
+- **Emoji and decorative symbols carry no meaning.** If dropping a symbol loses information, write it in words.
+- **Important things first:** the first ~1k tokens of each page hold the key facts (home: who, role, summary; project: company, period, role, main result).
 
-## 3. Лимит токенов при чтении
+## 3. Token limit when read
 
-Считается так, как читает агент: HTML → markdown (turndown) → подсчёт токенов (`js-tiktoken`, `o200k_base`, как приближение для всех моделей).
+Counted the way an agent reads: HTML → Markdown (turndown) → token count (`js-tiktoken`, `o200k_base`, as an approximation for all models).
 
-| Страница | Лимит |
+| Page | Limit |
 |---|---|
-| Главная | ≤ 4 000 токенов |
-| Проект | ≤ 6 000 токенов |
-| `.md`-версии | те же лимиты, что у HTML-оригинала |
-| `llms.txt` | ≤ 4 000 токенов |
-| `llms-full.txt` | предупреждение при > 40 000 токенов |
+| Home | ≤ 4,000 tokens |
+| Project | ≤ 6,000 tokens |
+| `.md` versions | same limits as the HTML original |
+| `llms.txt` | ≤ 4,000 tokens |
+| `llms-full.txt` | warning above 40,000 tokens |
 
-Лимиты взяты с запасом относительно типичной обрезки fetch-инструментов (порядка 10–30k токенов), чтобы страница гарантированно читалась целиком.
+The limits leave a wide margin below typical fetch-tool truncation (roughly 10–30k tokens), so each page is guaranteed to be read in full.
 
-## 4. Проверка при сборке
+## 4. Build-time check
 
-Скрипт после `astro build` проходит по `dist/` и для каждой страницы выводит таблицу: размер HTML, долю текста, число токенов и статус. Сборка падает, если превышен любой лимит из разделов 1 и 3 или найдены запрещённые элементы (`<script>`, кроме JSON-LD, `<style>`, `style=`, `<img>`, `<svg>`, `<iframe>`, `<div>`).
+After `astro build`, a script walks `dist/` and prints a table for every page: HTML size, text share, token count and status. The build fails if any limit from sections 1 and 3 is exceeded or forbidden elements are found (`<script>` other than JSON-LD, `<style>`, `style=`, `<img>`, `<svg>`, `<iframe>`, `<div>`).
