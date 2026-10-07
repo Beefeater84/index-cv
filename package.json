@@ -1,0 +1,21 @@
+{
+  "name": "index-cv",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build && node scripts/check.mjs",
+    "check": "node scripts/check.mjs",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "astro": "^7.3.6",
+    "marked": "^18.1.0",
+    "yaml": "^2.9.1",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "js-tiktoken": "^1.0.21",
+    "turndown": "^7.2.4"
+  }
+}

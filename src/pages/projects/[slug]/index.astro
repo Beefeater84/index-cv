@@ -1,0 +1,21 @@
+---
+import { marked } from 'marked';
+import Page from '../../../layouts/Page.astro';
+import { loadCv, projectMarkdown, projectMdUrl, projectUrl } from '../../../lib/content';
+
+export function getStaticPaths() {
+  return loadCv().projects.map((p) => ({ params: { slug: p.slug } }));
+}
+
+const { slug } = Astro.params;
+const { about, projects } = loadCv();
+const project = projects.find((p) => p.slug === slug)!;
+const html = marked.parse(projectMarkdown(slug), { async: false });
+---
+<Page
+  title={`${project.title} @ ${project.company} — ${about.name}`}
+  description={project.headline}
+  path={projectUrl(slug)}
+  mdPath={projectMdUrl(slug)}
+  html={html}
+/>

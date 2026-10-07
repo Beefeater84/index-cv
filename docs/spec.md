@@ -58,9 +58,10 @@
 2. Context — что за продукт / задача.
 3. What I did — конкретные действия и решения.
 4. Results — результаты в цифрах.
-5. Stack & skills — навыки с пояснением (из frontmatter), каждый навык ведёт обратно на главную.
-6. Related projects — из `[[wikilinks]]`.
-7. Footer: ссылка на главную («Full CV index»).
+5. Stack & skills — навыки с пояснением (из frontmatter).
+6. Ссылка на главную («Full CV index») — в начале и в конце.
+
+Связанные проекты — через `[[wikilinks]]` прямо в тексте.
 
 ## 3. Модель данных (Obsidian vault)
 
@@ -110,10 +111,9 @@ PostgreSQL:
   aliases: [Postgres, PG]
   category: Databases
   years: 6
-  last_used: 2024
 ```
 
-Категории задают группировку на главной.
+Категории задают группировку на главной. «Last used» вычисляется из периодов проектов, где навык указан.
 
 ### Валидация (сборка падает, если)
 
@@ -129,7 +129,9 @@ PostgreSQL:
 ## 5. Генерация
 
 - **Astro**, статический вывод.
-- Content collections + zod-схемы для валидации.
+- Контент читается из `content/` напрямую (`fs` + `yaml` + `zod`), без content collections — валидация явная и не зависит от API Astro.
+- Каждая страница сначала генерируется как markdown; HTML рендерится из того же markdown (`marked`). `.md` и HTML не могут разойтись, HTML остаётся минимальным.
+- В HTML ссылки относительные, в `.md` / `.txt` — абсолютные (`SITE_URL`).
 - Endpoints для `.md`, `llms.txt`, `llms-full.txt`.
 - Минимальный семантический HTML, без JS, CSS одним внешним файлом — см. [constraints.md](constraints.md).
 - JSON-LD `schema.org/Person` на главной (имя, должность, навыки, sameAs — LinkedIn/GitHub).

@@ -1,0 +1,13 @@
+# Skill registry. Keys are the canonical names used in project frontmatter.
+PostgreSQL:
+  aliases: [Postgres, PG]
+  category: Databases
+  years: 6
+Kubernetes:
+  aliases: [K8s]
+  category: Infrastructure
+  years: 4
+TypeScript:
+  aliases: [TS]
+  category: Languages
+  years: 7

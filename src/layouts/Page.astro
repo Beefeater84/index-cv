@@ -1,0 +1,29 @@
+---
+// Minimal semantic shell. Content arrives as HTML rendered from the page's Markdown.
+interface Props {
+  title: string;
+  description: string;
+  path: string;
+  mdPath: string;
+  html: string;
+  jsonLd?: object;
+}
+const { title, description, path, mdPath, html, jsonLd } = Astro.props;
+const site = Astro.site!.href.replace(/\/$/, '');
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={site + path} />
+    <link rel="alternate" type="text/markdown" href={mdPath} />
+    <link rel="stylesheet" href="/style.css" />
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+  </head>
+  <body>
+    <main set:html={html} />
+  </body>
+</html>

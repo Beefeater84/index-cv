@@ -1,0 +1,26 @@
+---
+import { marked } from 'marked';
+import Page from '../layouts/Page.astro';
+import { indexMarkdown, loadCv } from '../lib/content';
+
+const { about, skills } = loadCv();
+const html = marked.parse(indexMarkdown(), { async: false });
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: about.name,
+  jobTitle: about.role,
+  email: `mailto:${about.email}`,
+  url: Astro.site!.href,
+  knowsAbout: skills.map((s) => s.name),
+  sameAs: [about.linkedin, about.github].filter(Boolean),
+};
+---
+<Page
+  title={`${about.name} — ${about.role} — CV`}
+  description={about.summary.trim()}
+  path="/"
+  mdPath="/index.md"
+  html={html}
+  jsonLd={jsonLd}
+/>
