@@ -23,3 +23,9 @@ npm run check    # check constraints on existing dist/
 ```
 
 `SITE_URL` sets the public URL (default `https://cv.example.com`).
+
+## License
+
+The code is licensed under the [MIT License](LICENSE).
+
+The CV content in `content/` (texts, project descriptions, personal data) is © Tony Miasoedov, all rights reserved, and is **not** covered by the MIT License. If you reuse this project for your own CV, replace everything in `content/`.
